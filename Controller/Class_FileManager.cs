@@ -350,6 +350,11 @@ namespace FileManager
         {
             try
             {
+                if (!filepath.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase))
+                {
+                    filepath += ".xlsx";
+                }
+
                 using (var workbook = new XLWorkbook())
                 {
                     var worksheet = workbook.Worksheets.Add("Clientes");
@@ -495,7 +500,12 @@ namespace FileManager
         {
             try
             {
-                using (var writer = new StreamWriter(filepath + ".csv", false, System.Text.Encoding.UTF8))
+                if (!filepath.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+                {
+                    filepath += ".csv";
+                }
+
+                using (var writer = new StreamWriter(filepath, false, System.Text.Encoding.UTF8))
                 {
                     // Write headers
                     writer.WriteLine("IdentificacaoRegistro;DataCarencia;TipoJuros;Branco1;TaxaJuros;Coobrigacao;CaracteristicaEspecial;ModalidadeOperacao;NaturezaOperacao;OrigemRecurso;ClasseRiscoOperacao;Zeros1;NumeroControleParticipante;NumeroBanco;Zeros2;IdentificacaoTituloBanco;DigitoNossoNumero;ValorPago;CondicaoEmissaoPapeletaCobranca;IdentEmitePapeletaDebitoAutomatico;DataLiquidacao;IdentificacaoOperacaoBanco;IndicadorRateioCredito;EnderecamentoAvisoDebitoAutomatico;Branco2;IdentificacaoOcorrencia;NumeroDocumento;DataVencimentoTitulo;Parcelas;BancoEncarregadoCobranca;AgenciaDepositaria;EspecieTitulo;Identificacao;DatasEmissao;PrimeiraInstrucao;SegundaInstrucao;TipoPessoaCedente;JurosMora;NumeroTermoCessao;ValorPresenteParcela;ValorAbatimento;IdentTipoInscricaoSacado;CPF_CNPJ;Nome;EnderecoCompleto;NumeroNotaFiscalDuplicata;NumeroSerieNotaFiscalDuplicata;CEP;Cedente;ChaveNota;NumeroSequencialRegistro;TotalParcelasCliente");

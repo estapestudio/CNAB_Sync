@@ -45,9 +45,11 @@ namespace ViewHandler
 
             _ = window.RegisterWebMessageReceivedHandler((object? sender, string message) =>
             {
-                message = message.Trim('"');
-                Console.WriteLine(message); // Debug to console.
-                // Header Menu
+                try
+                {
+                    message = message.Trim('"');
+                    Console.WriteLine(message); // Debug to console.
+                    // Header Menu
                 switch (message)
                 {
                     case "menuTopNovo":
@@ -135,16 +137,16 @@ namespace ViewHandler
                                 {
                                     window.ShowMessage("CNAB Sync - Aviso", "Salvamento de arquivo .CNABSync para formato 500 ainda não suportado.", PhotinoDialogButtons.Ok, PhotinoDialogIcon.Warning);
                                 }
-                                else
+                                else if (clients is List<Class_Detalhe444> list444)
                                 {
-                                    var result = fileManager.SavePropFile(clients, path);
-                                    if (result.success)
+                                    var (success, errorMessage) = fileManager.SavePropFile(list444, path);
+                                    if (success)
                                     {
                                         window.ShowMessage("CNAB Sync", "Arquivo salvo com sucesso.", PhotinoDialogButtons.Ok, PhotinoDialogIcon.Info);
                                     }
                                     else
                                     {
-                                        window.ShowMessage("CNAB Sync - Erro", $"Falha ao salvar.\nDetalhes: {result.errorMessage}", PhotinoDialogButtons.Ok, PhotinoDialogIcon.Error);
+                                        window.ShowMessage("CNAB Sync - Erro", $"Falha ao salvar.\nDetalhes: {errorMessage}", PhotinoDialogButtons.Ok, PhotinoDialogIcon.Error);
                                     }
                                 }
                             }
@@ -218,17 +220,17 @@ namespace ViewHandler
                                 {
                                     window.ShowMessage("CNAB Sync - Aviso", "Exportação para CNAB 500 ainda não suportada.", PhotinoDialogButtons.Ok, PhotinoDialogIcon.Warning);
                                 }
-                                else
+                                else if (clients is List<Class_Detalhe444> list444)
                                 {
-                                    var result = fileManager.Export444XLSX(clients, path);
-                                    if (result.success)
+                                    var (success, errorMessage) = fileManager.Export444XLSX(list444, path);
+                                    if (success)
                                     {
                                         window.ShowMessage("CNAB Sync - Sucesso", "CNAB exportado para Excel com sucesso.", PhotinoDialogButtons.Ok, PhotinoDialogIcon.Info);
                                     }
                                     else
                                     {
-                                        Console.WriteLine($"CNAB Sync - Erro: Falha ao exportar CNAB para Excel. Detalhes: {result.errorMessage}");
-                                        window.ShowMessage("CNAB Sync - Erro", $"Falha ao exportar CNAB para Excel.\nDetalhes: {result.errorMessage}", PhotinoDialogButtons.Ok, PhotinoDialogIcon.Error);
+                                        Console.WriteLine($"CNAB Sync - Erro: Falha ao exportar CNAB para Excel. Detalhes: {errorMessage}");
+                                        window.ShowMessage("CNAB Sync - Erro", $"Falha ao exportar CNAB para Excel.\nDetalhes: {errorMessage}", PhotinoDialogButtons.Ok, PhotinoDialogIcon.Error);
                                     }
                                 }
                             }
@@ -254,18 +256,18 @@ namespace ViewHandler
                                 {
                                     window.ShowMessage("CNAB Sync - Aviso", "Exportação para CNAB 500 ainda não suportada.", PhotinoDialogButtons.Ok, PhotinoDialogIcon.Warning);
                                 }
-                                else
+                                else if (clients is List<Class_Detalhe444> list444)
                                 {
-                                    var result = fileManager.Export444CSV(clients, path);
-                                    if (result.success)
+                                    var (success, errorMessage) = fileManager.Export444CSV(list444, path);
+                                    if (success)
                                     {
                                         Console.WriteLine("CNAB Sync - Sucesso: CNAB exportado para CSV com sucesso.");
                                         window.ShowMessage("CNAB Sync - Sucesso", "CNAB exportado para CSV com sucesso.", PhotinoDialogButtons.Ok, PhotinoDialogIcon.Info);
                                     }
                                     else
                                     {
-                                        Console.WriteLine($"CNAB Sync - Erro: Falha ao exportar CNAB para CSV. Detalhes: {result.errorMessage}");
-                                        window.ShowMessage("CNAB Sync - Erro", $"Falha ao exportar CNAB para CSV.\nDetalhes: {result.errorMessage}", PhotinoDialogButtons.Ok, PhotinoDialogIcon.Error);
+                                        Console.WriteLine($"CNAB Sync - Erro: Falha ao exportar CNAB para CSV. Detalhes: {errorMessage}");
+                                        window.ShowMessage("CNAB Sync - Erro", $"Falha ao exportar CNAB para CSV.\nDetalhes: {errorMessage}", PhotinoDialogButtons.Ok, PhotinoDialogIcon.Error);
                                     }
                                 }
                             }
@@ -349,7 +351,13 @@ namespace ViewHandler
                 {
 
                 }
-            });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro no processamento da mensagem '{message}': {ex}");
+                window.ShowMessage("CNAB Sync - Erro", $"Ocorreu um erro inesperado:\n{ex.Message}", PhotinoDialogButtons.Ok, PhotinoDialogIcon.Error);
+            }
+        });
 
             // Mantém o aplicativo rodando até a janela ser fechada
             window.WaitForClose();
